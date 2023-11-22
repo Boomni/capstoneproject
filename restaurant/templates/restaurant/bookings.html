@@ -7,9 +7,17 @@
     <h1>All Reservations</h1>
 
     <div class="row">
-
       <div class="column">
-        <pre id="bookings"></pre>
+        <table id="bookings-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>No. of Guests</th>
+              <th>Booking Date</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
       </div>
 
       <div class="column">
@@ -20,26 +28,28 @@
             referrerpolicy="no-referrer-when-downgrade"></iframe>
         </div>
       </div>
-
     </div>
   </article>
 </section>
 
 <script>
-  const pre = document.getElementById('bookings');
-  const p = document.createElement('p');
-  var content = document.createTextNode('')
-
+  const table = document.getElementById('bookings-table');
+  const tbody = table.querySelector('tbody');
   const parse_content = '{{ bookings|safe }}';
-  if (parse_content === 'No Booking') {
-    content = document.createTextNode(parse_content);
-  } else {
-    const bookings = JSON.parse('{{ bookings|safe }}');
-    const pretty_json = JSON.stringify(bookings, null, 2);
-    content = document.createTextNode(pretty_json)
-  }
+  const bookings = JSON.parse(parse_content);
 
-  p.appendChild(content);
-  pre.appendChild(p);
+  if (bookings.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="3">No bookings available.</td></tr>';
+  } else {
+    bookings.forEach(booking => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${booking.name}</td>
+        <td>${booking.no_of_guests}</td>
+        <td>${booking.booking_date}</td>
+      `;
+      tbody.appendChild(row);
+    });
+  }
 </script>
 {% endblock %}
